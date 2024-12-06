@@ -1,0 +1,9 @@
+streamlit
+fastapi 
+uvicorn 
+boto3 
+huggingface_hub 
+celery 
+redis 
+python-multipart
+gradio_client
