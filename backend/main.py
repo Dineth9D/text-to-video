@@ -46,7 +46,7 @@ async def generate_text_video(request: GenerateTextVideoRequest):
 
 
 @app.post("/generate-image-video")
-async def generate_image_video(prompt: str = Form(...), file: UploadFile = File(...)):
+async def generate_image_video( file: UploadFile = File(...)):
     if file.content_type not in ["image/jpeg", "image/png"]:
         raise HTTPException(
             status_code=400, detail="Invalid file type. Only JPEG and PNG are allowed.")
@@ -57,10 +57,12 @@ async def generate_image_video(prompt: str = Form(...), file: UploadFile = File(
         raise HTTPException(
             status_code=400, detail="File size exceeds the maximum limit of 5MB.")
 
-    file_url = upload_verified_image_to_s3(file_content, file.filename)
+    # Uncomment the following line and remove assign the file_url to the uploaded image URL
+    # file_url = upload_verified_image_to_s3(file_content, file.filename)
+    file_url = "https://github.com/Dineth9D/text-to-video/blob/main/backend/rb_35017.png"
 
     video_content = process_video_task(
-        {"prompt": prompt, "image": file_url}, "image")
+        {"image_url": file_url}, "image")
 
     #######################################################################################################
     #                                                                                                     #
@@ -80,7 +82,7 @@ async def generate_image_video(prompt: str = Form(...), file: UploadFile = File(
         pass
 
     # USe video_url instead of video_content if you want to return the URL of the video
-    return JSONResponse(content={"message": "Video generated successfully", "video_url": video_content})
+    return {"message": "Video generated successfully", "video_url": video_content}
 
 
 @app.post("/generate-text-image-video")
@@ -101,7 +103,7 @@ async def generate_text_image_video(request: str = Form(...), file: UploadFile =
             
         # Uncomment the following line and remove assign the file_url to the uploaded image URL
         # file_url = upload_verified_image_to_s3(file_content, file.filename)
-        file_url = "https://raw.githubusercontent.com/gradio-app/gradio/main/test/test_files/bus.png"
+        file_url = "https://github.com/Dineth9D/text-to-video/blob/main/backend/rb_35017.png"
     else:
         file_url = None
 
