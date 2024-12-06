@@ -1,9 +1,12 @@
 from gradio_client import Client, handle_file
+from decouple import config
+
+HUGGINGFACE_API_KEY = config("HUGGINGFACE_API_KEY")
 
 
 def generate_video(prompt, image_url, input_type):
     if input_type == "text":
-        client = Client("Moupiya/texttovideo", hf_token="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")
+        client = Client("Moupiya/texttovideo", hf_token = HUGGINGFACE_API_KEY)
         video_path = client.predict(
             prompt=prompt,
             negative_prompt=prompt,
@@ -15,7 +18,7 @@ def generate_video(prompt, image_url, input_type):
         )
 
     elif input_type == "image":
-        client = Client("Moupiya/texttovideo", hf_token="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")
+        client = Client("Moupiya/texttovideo", hf_token = HUGGINGFACE_API_KEY)
         video_path = client.predict(
             prompt=prompt,
             negative_prompt=prompt,
@@ -27,7 +30,7 @@ def generate_video(prompt, image_url, input_type):
         )
 
     elif input_type == "text_image":
-        client = Client("peterpeter8585/image-to-video-cog", hf_token="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")
+        client = Client("peterpeter8585/image-to-video-cog", hf_token = HUGGINGFACE_API_KEY)
         video_path = client.predict(
             prompt=prompt,
             image=handle_file(image_url),
