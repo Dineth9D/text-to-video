@@ -1,8 +1,12 @@
+import json
 from fastapi import FastAPI, UploadFile, Form, File, HTTPException
-from s3_utils import upload_verified_image_to_s3
+from s3_utils import upload_verified_image_to_s3, upload_to_s3
 from tasks import process_video_task
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
+from tempfile import NamedTemporaryFile
+import os
+from typing import Optional
 
 app = FastAPI()
 
@@ -10,52 +14,119 @@ app = FastAPI()
 class GenerateTextVideoRequest(BaseModel):
     prompt: str
     input_type: str
+    image_url: Optional[str] = None
 
 
 @app.post("/generate-text-video")
 async def generate_text_video(request: GenerateTextVideoRequest):
     prompt = request.prompt
-    result = process_video_task({"prompt": prompt}, "text")
-    return {"message": "Video generated successfully", "video_url": result}
+    input_type = request.input_type
+    video_content = process_video_task({"prompt": prompt, "image_url": None}, input_type)
+
+    #######################################################################################################
+    #                                                                                                     #
+    #  Uncomment the following code and remove the pass statements if you want to upload the video to S3  #
+    #                                                                                                     #
+    #######################################################################################################
+
+    # with NamedTemporaryFile(delete=False) as temp_file:
+    #     temp_file.write(video_content)
+    #     temp_file_path = temp_file.name
+
+    try:
+
+        # video_url = upload_to_s3(temp_file_path, "generated_text_video.mp4")
+        pass
+    finally:
+        # os.remove(temp_file_path)
+        pass
+
+    # USe video_url instead of video_content if you want to return the URL of the video
+    return {"message": "Video generated successfully", "video_url": video_content}
 
 
 @app.post("/generate-image-video")
 async def generate_image_video(prompt: str = Form(...), file: UploadFile = File(...)):
     if file.content_type not in ["image/jpeg", "image/png"]:
-        raise HTTPException(status_code=400, detail="Invalid file type. Only JPEG and PNG are allowed.")
-    
+        raise HTTPException(
+            status_code=400, detail="Invalid file type. Only JPEG and PNG are allowed.")
+
     file_content = await file.read()
     max_file_size = 5 * 1024 * 1024  # 5MB
     if len(file_content) > max_file_size:
-        raise HTTPException(status_code=400, detail="File size exceeds the maximum limit of 5MB.")
-    
+        raise HTTPException(
+            status_code=400, detail="File size exceeds the maximum limit of 5MB.")
+
     file_url = upload_verified_image_to_s3(file_content, file.filename)
-    
-    result = process_video_task(
+
+    video_content = process_video_task(
         {"prompt": prompt, "image": file_url}, "image")
-    return JSONResponse(content={"message": "Video generated successfully", "video_url": result})
+
+    #######################################################################################################
+    #                                                                                                     #
+    #  Uncomment the following code and remove the pass statements if you want to upload the video to S3  #
+    #                                                                                                     #
+    #######################################################################################################
+
+    # with NamedTemporaryFile(delete=False) as temp_file:
+    #     temp_file.write(video_content)
+    #     temp_file_path = temp_file.name
+
+    try:
+        # video_url = upload_to_s3(temp_file_path, "generated_image_video.mp4")
+        pass
+    finally:
+        # os.remove(temp_file_path)
+        pass
+
+    # USe video_url instead of video_content if you want to return the URL of the video
+    return JSONResponse(content={"message": "Video generated successfully", "video_url": video_content})
 
 
 @app.post("/generate-text-image-video")
-async def generate_text_image_video(request: GenerateTextVideoRequest, file: UploadFile = None):
-    prompt = request.prompt
-    
+async def generate_text_image_video(request: str = Form(...), file: UploadFile = None):
+    request_data = json.loads(request)
+    prompt = request_data['prompt']
+
     if file:
         if file.content_type not in ["image/jpeg", "image/png"]:
-            raise HTTPException(status_code=400, detail="Invalid file type. Only JPEG and PNG are allowed.")
-        
+            raise HTTPException(
+                status_code=400, detail="Invalid file type. Only JPEG and PNG are allowed.")
+
         file_content = await file.read()
         max_file_size = 5 * 1024 * 1024  # 5MB
         if len(file_content) > max_file_size:
-            raise HTTPException(status_code=400, detail="File size exceeds the maximum limit of 5MB.")
-        
-        file_url = upload_verified_image_to_s3(file_content, file.filename)
+            raise HTTPException(
+                status_code=400, detail="File size exceeds the maximum limit of 5MB.")
+            
+        # Uncomment the following line and remove assign the file_url to the uploaded image URL
+        # file_url = upload_verified_image_to_s3(file_content, file.filename)
+        file_url = "https://raw.githubusercontent.com/gradio-app/gradio/main/test/test_files/bus.png"
     else:
         file_url = None
 
-    result = process_video_task(
+    video_content = process_video_task(
         {"prompt": prompt, "image_url": file_url}, "text_image")
-    return {"message": "Video generated successfully", "video_url": result}
+
+    #######################################################################################################
+    #                                                                                                     #
+    #  Uncomment the following code and remove the pass statements if you want to upload the video to S3  #
+    #                                                                                                     #
+    #######################################################################################################
+
+    # with NamedTemporaryFile(delete=False) as temp_file:
+    #     temp_file.write(video_content)
+    #     temp_file_path = temp_file.name
+
+    try:
+        # video_url = upload_to_s3(temp_file_path, "generated_text_image_video.mp4")
+        pass
+    finally:
+        # os.remove(temp_file_path)
+        pass
+
+    # USe video_url instead of video_content if you want to return the URL of the video
+    return {"message": "Video generated successfully", "video_url": video_content}
 
 
 @app.post("/status/{task_id}")

@@ -7,7 +7,7 @@ import cv2
 
 def process_video_task(input_data, input_type):
     prompt = input_data["prompt"]
-    image_url = input_data["image"]
+    image_url = input_data["image_url"]
     output_path = generate_video(prompt, image_url, input_type)
     # video_url = upload_to_s3(output_path)
     return output_path
