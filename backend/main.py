@@ -1,13 +1,12 @@
 import json
+from typing import Optional
+
 from fastapi import FastAPI, UploadFile, Form, File, HTTPException
-from fastapi.responses import StreamingResponse
-from s3_utils import upload_verified_image_to_s3, upload_to_s3
-from tasks import process_video_task
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from tempfile import NamedTemporaryFile
-import os
-from typing import Optional
+
+from s3_utils import upload_verified_image_to_s3, upload_to_s3
+from tasks import process_video_task
 
 app = FastAPI()
 
@@ -24,24 +23,6 @@ async def generate_text_video(request: GenerateTextVideoRequest):
         prompt = request.prompt
         input_type = request.input_type
         video_url = process_video_task({"prompt": prompt, "image_url": None}, input_type)
-
-        #######################################################################################################
-        #                                                                                                     #
-        #  Uncomment the following code and remove the pass statements if you want to upload the video to S3  #
-        #                                                                                                     #
-        #######################################################################################################
-
-        # with NamedTemporaryFile(delete=False) as temp_file:
-        #     temp_file.write(video_content)
-        #     temp_file_path = temp_file.name
-
-        try:
-
-            # video_url = upload_to_s3(temp_file_path, "generated_text_video.mp4")
-            pass
-        finally:
-            # os.remove(temp_file_path)
-            pass
         
         return {"message": "Video generated successfully", "video_url": video_url}
     except Exception as e:
@@ -64,28 +45,10 @@ async def generate_image_video( file: UploadFile = File(...)):
     # file_url = upload_verified_image_to_s3(file_content, file.filename)
     file_url = "https://github.com/Dineth9D/text-to-video/blob/main/backend/rb_35017.png"
 
-    video_content = process_video_task(
+    video_url = process_video_task(
         {"image_url": file_url}, "image")
 
-    #######################################################################################################
-    #                                                                                                     #
-    #  Uncomment the following code and remove the pass statements if you want to upload the video to S3  #
-    #                                                                                                     #
-    #######################################################################################################
-
-    # with NamedTemporaryFile(delete=False) as temp_file:
-    #     temp_file.write(video_content)
-    #     temp_file_path = temp_file.name
-
-    try:
-        # video_url = upload_to_s3(temp_file_path, "generated_image_video.mp4")
-        pass
-    finally:
-        # os.remove(temp_file_path)
-        pass
-
-    # USe video_url instead of video_content if you want to return the URL of the video
-    return {"message": "Video generated successfully", "video_url": video_content}
+    return {"message": "Video generated successfully", "video_url": video_url}
 
 
 @app.post("/generate-text-image-video")
@@ -110,28 +73,10 @@ async def generate_text_image_video(request: str = Form(...), file: UploadFile =
     else:
         file_url = None
 
-    video_content = process_video_task(
+    video_url = process_video_task(
         {"prompt": prompt, "image_url": file_url}, "text_image")
 
-    #######################################################################################################
-    #                                                                                                     #
-    #  Uncomment the following code and remove the pass statements if you want to upload the video to S3  #
-    #                                                                                                     #
-    #######################################################################################################
-
-    # with NamedTemporaryFile(delete=False) as temp_file:
-    #     temp_file.write(video_content)
-    #     temp_file_path = temp_file.name
-
-    try:
-        # video_url = upload_to_s3(temp_file_path, "generated_text_image_video.mp4")
-        pass
-    finally:
-        # os.remove(temp_file_path)
-        pass
-
-    # USe video_url instead of video_content if you want to return the URL of the video
-    return {"message": "Video generated successfully", "video_url": video_content}
+    return {"message": "Video generated successfully", "video_url": video_url}
 
 
 @app.post("/status/{task_id}")

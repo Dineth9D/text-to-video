@@ -1,25 +1,19 @@
-from celery import Celery
 from models import generate_video
 from s3_utils import upload_to_s3
-# from realesrgan import RealESRGAN
-import cv2
-import os
-import subprocess
-import asyncio
-import aiofiles
 
 
 def process_video_task(input_data, input_type):
     prompt = input_data["prompt"]
     image_url = input_data["image_url"]
     # output_path = generate_video(prompt, image_url, input_type)
+    
     output_path = "https://www.sample-videos.com/video321/mp4/720/big_buck_bunny_720p_2mb.mp4"
     
     # # Upscale the generated video
     # upscale_video = upscale_video_task(output_path)
     
     # # Upscale the generated video
-    # video_url = upload_to_s3(output_path)
+    # output_path = upload_to_s3(output_path)
     return output_path
 
 

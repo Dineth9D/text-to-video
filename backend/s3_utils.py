@@ -1,8 +1,9 @@
+import os
+from tempfile import NamedTemporaryFile
+
 import boto3
 from botocore.exceptions import NoCredentialsError
-import os
 from decouple import config
-from tempfile import NamedTemporaryFile
 
 
 AWS_ACCESS_KEY = config("AWS_ACCESS_KEY")
