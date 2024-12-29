@@ -5,16 +5,16 @@ from s3_utils import upload_to_s3
 def process_video_task(input_data, input_type):
     prompt = input_data["prompt"]
     image_url = input_data["image_url"]
-    # output_path = generate_video(prompt, image_url, input_type)
+    output_file = generate_video(prompt, image_url, input_type)
     
-    output_path = "https://www.sample-videos.com/video321/mp4/720/big_buck_bunny_720p_2mb.mp4"
+    # output_path = "https://www.sample-videos.com/video321/mp4/720/big_buck_bunny_720p_2mb.mp4"
     
     # # Upscale the generated video
     # upscale_video = upscale_video_task(output_path)
     
     # # Upscale the generated video
     # output_path = upload_to_s3(output_path)
-    return output_path
+    return output_file
 
 
 # def upscale_video_task(input_path):

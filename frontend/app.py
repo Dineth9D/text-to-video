@@ -1,3 +1,4 @@
+import base64
 import streamlit as st
 import requests
 import json
@@ -20,7 +21,6 @@ def make_request(url, data=None, files=None):
         return None
 
 
-# Text input option
 if option == "Text":
     prompt = st.text_area("Enter Text Prompt")
     if st.button("Generate Video"):
@@ -30,11 +30,26 @@ if option == "Text":
                 data={"prompt": prompt, "input_type": "text"}
             )
             if response:
-                response_json = response.json()
-                video_url = response_json.get("video_url")
-                st.video(video_url, format="video/mp4")
+                try:
+                    response_json = response.json()
+                    # st.write(response_json)
+                    video_data = response_json.get("video_url")
+                    if video_data:
+                        video_base64 = video_data.get("video")
+                        if video_base64:
+                            video_bytes = base64.b64decode(video_base64)
+                            st.video(video_bytes, format="video/mp4")
+                        else:
+                            st.error(
+                                "Failed to retrieve video: No video data in response.")
+                    else:
+                        st.error(
+                            "Failed to retrieve video: No video_url in response.")
+                except Exception as e:
+                    st.error(f"Failed to retrieve video: {e}")
             else:
-                st.error("Failed to retrieve video.")
+                st.error("Failed to retrieve video: No response from server.")
+
 
 # Image input option
 elif option == "Image":
@@ -45,11 +60,25 @@ elif option == "Image":
             response = make_request(
                 "http://localhost:8000/generate-image-video", files=files)
             if response:
-                response_json = response.json()
-                video_url = response_json.get("video_url")
-                st.video(video_url, format="video/mp4")
+                try:
+                    response_json = response.json()
+                    # st.write(response_json)
+                    video_data = response_json.get("video_url")
+                    if video_data:
+                        video_base64 = video_data.get("video")
+                        if video_base64:
+                            video_bytes = base64.b64decode(video_base64)
+                            st.video(video_bytes, format="video/mp4")
+                        else:
+                            st.error(
+                                "Failed to retrieve video: No video data in response.")
+                    else:
+                        st.error(
+                            "Failed to retrieve video: No video_url in response.")
+                except Exception as e:
+                    st.error(f"Failed to retrieve video: {e}")
             else:
-                st.error("Failed to retrieve video.")
+                st.error("Failed to retrieve video: No response from server.")
 
 # Text + Image input option
 elif option == "Text + Image":
@@ -66,11 +95,25 @@ elif option == "Text + Image":
                 files=files
             )
             if response:
-                response_json = response.json()
-                video_url = response_json.get("video_url")
-                st.video(video_url, format="video/mp4")
+                try:
+                    response_json = response.json()
+                    # st.write(response_json)
+                    video_data = response_json.get("video_url")
+                    if video_data:
+                        video_base64 = video_data.get("video")
+                        if video_base64:
+                            video_bytes = base64.b64decode(video_base64)
+                            st.video(video_bytes, format="video/mp4")
+                        else:
+                            st.error(
+                                "Failed to retrieve video: No video data in response.")
+                    else:
+                        st.error(
+                            "Failed to retrieve video: No video_url in response.")
+                except Exception as e:
+                    st.error(f"Failed to retrieve video: {e}")
             else:
-                st.error("Failed to retrieve video.")
+                st.error("Failed to retrieve video: No response from server.")
 
 # Task status section
 st.write("Check Task Status:")
