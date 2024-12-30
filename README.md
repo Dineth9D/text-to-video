@@ -3,7 +3,7 @@
 This project provides a system for generating videos from text prompts, images, or a combination of both. It includes a FastAPI backend for handling video generation requests and a Streamlit frontend for user interaction.
 
 ## Pipeline
-![Text-to-Video Pipeline](backend\data\pipeline.png)
+![Text-to-Video Pipeline](backend/data/pipeline.png)
 
 ## Project Structure
 
@@ -93,7 +93,7 @@ The frontend is implemented using Streamlit and provides a user interface for in
     - Note the `ngrok` URL provided in the notebook output.
     - Update the backend server URL in `backend/main.py` with the `ngrok` URL.
     ```
-    ![Text-to-Video Pipeline](backend\data\ngrok.png)
+    ![Text-to-Video Pipeline](backend/data/ngrok.png)
     
 
 2. Start the backend server:
