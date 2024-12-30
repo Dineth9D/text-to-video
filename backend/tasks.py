@@ -5,7 +5,8 @@ from s3_utils import upload_to_s3
 def process_video_task(input_data, input_type):
     prompt = input_data["prompt"]
     image_url = input_data["image_url"]
-    output_file = generate_video(prompt, image_url, input_type)
+    url = input_data["ngrok_url"]
+    output_file = generate_video(prompt, image_url, input_type, url)
     
     # output_path = "https://www.sample-videos.com/video321/mp4/720/big_buck_bunny_720p_2mb.mp4"
     

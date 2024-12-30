@@ -6,11 +6,10 @@ from requests.adapters import HTTPAdapter
 from requests.adapters import Retry
 
 
-def generate_video(prompt, image_base64, input_type):
+def generate_video(prompt, image_base64, input_type, url):
     logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger(__name__)
 
-    url = "https://1e56-34-124-161-147.ngrok-free.app/predict/"
     request_id = str(uuid.uuid4())
     payload = {"request_id": request_id}
 
@@ -29,10 +28,15 @@ def generate_video(prompt, image_base64, input_type):
 
     try:
         session = requests.Session()
-        retries = Retry(total=5, backoff_factor=1, status_forcelist=[500, 502, 503, 504])
-        session.mount("https://", HTTPAdapter(max_retries=retries))
+        # retries = Retry(total=5, backoff_factor=1, status_forcelist=[500, 502, 503, 504])
+        # session.mount("https://", HTTPAdapter(max_retries=retries))
+        
+        headers = {
+            'Connection': 'keep-alive'
+        }
 
-        response = session.post(url, json=payload)
+
+        response = session.post(url, json=payload, headers= headers, timeout=1200)
         response.raise_for_status()
 
         video_base64 = base64.b64encode(response.content).decode('utf-8')
@@ -42,14 +46,8 @@ def generate_video(prompt, image_base64, input_type):
             "filename": f"{request_id}.mp4"
         }
 
-        # logger.debug(f"Response data: {response_data}")
         return response_data
 
     except requests.exceptions.RequestException as e:
         logger.error(f"An error occurred: {e}")
         return None
-
-
-        # video_filename = f"{request_id}.mp4"
-        # with open(video_filename, "wb") as video_file:
-        #     video_file.write(response.content)
