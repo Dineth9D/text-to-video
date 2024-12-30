@@ -3,7 +3,7 @@
 This project provides a system for generating videos from text prompts, images, or a combination of both. It includes a FastAPI backend for handling video generation requests and a Streamlit frontend for user interaction.
 
 ## Pipeline
-![Text-to-Video Pipeline](pipeline.png)
+![Text-to-Video Pipeline](backend\data\pipeline.png)
 
 ## Project Structure
 
@@ -18,18 +18,16 @@ backend/
 
 frontend/
 |── app.py
+
+Notebooks/
+|── Hosting_model_on_Google_Colaboratory.ipynb
 ```
-
-## Backend
-
-The backend is implemented using FastAPI and provides endpoints for generating videos from text, images, or both. It also includes utilities for uploading files to S3.
 
 ### Endpoints
 
 - **POST /generate-text-video**: Generates a video from a text prompt.
 - **POST /generate-image-video**: Generates a video from an uploaded image.
 - **POST /generate-text-image-video**: Generates a video from a text prompt and an uploaded image.
-- **POST /status/{task_id}**: Retrieves the status of a task.
 
 ### Files
 
@@ -37,6 +35,11 @@ The backend is implemented using FastAPI and provides endpoints for generating v
 - models.py: Pydantic models for request validation.
 - s3_utils.py: Utilities for uploading files to S3.
 - tasks.py: Task processing functions for video generation.
+- Hosting_model_on_Google_Colaboratory.ipynb: Notebook for hosting deep learning models on Google Colab.
+
+## Backend
+
+The backend is implemented using FastAPI and provides endpoints for generating videos from text, images, or both. It also includes utilities for uploading files to S3.
 
 ## Frontend
 
@@ -47,7 +50,6 @@ The frontend is implemented using Streamlit and provides a user interface for in
 - Select input type: Text, Image, or Text + Image.
 - Enter text prompt and/or upload an image.
 - Generate video and display the result.
-- Check the status of a task.
 
 ### Files
 
@@ -77,15 +79,30 @@ The frontend is implemented using Streamlit and provides a user interface for in
     pip install -r requirements.txt
     ```
 
-## Usage
+4. Upload the Notebook to Google Colab:
+    ```
+    - Open your Google Drive and create a folder for the project (e.g., 'Text_to_Video_Generation').
+    - Upload 'Hosting_model_on_Google_Colaboratory.ipynb' to this folder.
+    - Open the notebook in Google Colab by right-clicking and selecting Open with > Google Colaboratory.
+    ```
 
-1. Start the backend server:
+## Usage
+1. Start the server in Google Colab:
+    ```
+    - Run the notebook to start the FastAPI server.
+    - Note the `ngrok` URL provided in the notebook output.
+    - Update the backend server URL in `backend/main.py` with the `ngrok` URL.
+    ```
+    ![Text-to-Video Pipeline](backend\data\ngrok.png)
+    
+
+2. Start the backend server:
     ```sh
     cd backend
     uvicorn main:app --reload
     ```
 
-2. Start the frontend application:
+3. Start the frontend application:
     ```sh
     cd ../frontend
     streamlit run app.py
